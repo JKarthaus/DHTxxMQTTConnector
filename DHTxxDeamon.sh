@@ -10,23 +10,32 @@
 #
 # The MQTT Broker
 # 
-BROKER=heizung:1883
-TOPIC=de.filiberry.bathcontrol/ 
+BROKER=heizung
+TOPIC=de/filiberry/bathcontrol/data 
 
 # Python Script Parameter
 DHT_MODELL=11
 GPIO_PIN=4
 
-DATA= "22#60"
+DIR=${PWD}
 
-TEMP= echo $DATA | cut -d "#" -f 1
-HUMINITY= echo $DATA | cut -d "#" -f 2
+while true; do
+	DATA=$(python $DIR/test_dhtxx.py 2>&1)
+	#
+	TEMP=$(echo $DATA | cut -d "#" -f 1)
+	HUMINITY=$(echo $DATA | cut -d "#" -f 2)
+	#
+	# Send the Temperature to the Broker 
+	#echo "mosquitto_pub -h $BROKER -t $TOPIC/temp/wintergarten -m $TEMP"
+	mosquitto_pub -h $BROKER -t $TOPIC/temp/wintergarten -m $TEMP
+	#
+	sleep 1
+	# Send the Huminity to the Broker
+	#echo "mosquitto_pub -h $BROKER -t $TOPIC/feuchte/badezimmer -m $HUMINITY"
+	mosquitto_pub -h $BROKER -t $TOPIC/feuchte/badezimmer -m $HUMINITY
+	#
+	sleep 10
+done
 
-
-
-
-
-echo $TEMP
-echo $HUMINITY
 
 
