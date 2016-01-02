@@ -1,3 +1,3 @@
 import sys
 
-print '25#80'
+print '20#60'
